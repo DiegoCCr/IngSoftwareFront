@@ -4,35 +4,48 @@ import SignupView from '../views/SignupView.vue';
 import PaginaAdminView from '../views/PaginaAdminView.vue';
 import PaginaUsuarioView from '../views/PaginaUsuarioView.vue';
 
+// Definición de rutas de la aplicación
 const routes = [
-  { path: '/', name: 'login', component: LoginView },
-  { path: '/signup', name: 'signup', component: SignupView },
-  { path: '/admin', name: 'PaginaAdminView', component: PaginaAdminView, meta: { requiresAuth: true, role: 'admin' } },
-  { path: '/usuario', name: 'PaginaUsuarioView', component: PaginaUsuarioView, meta: { requiresAuth: true, role: 'user' } },
-  { path: '/registrarse', redirect: '/signup' }
+  { path: '/', name: 'login', component: LoginView }, // Ruta para la vista de login
+  { path: '/signup', name: 'signup', component: SignupView }, // Ruta para la vista de registro
+  { 
+    path: '/admin', 
+    name: 'PaginaAdminView', 
+    component: PaginaAdminView, 
+    meta: { requiresAuth: true, role: 'admin' } // Requiere autenticación y rol de administrador
+  },
+  { 
+    path: '/usuario', 
+    name: 'PaginaUsuarioView', 
+    component: PaginaUsuarioView, 
+    meta: { requiresAuth: true, role: 'user' } // Requiere autenticación y rol de usuario
+  },
+  { path: '/registrarse', redirect: '/signup' } // Redirección de la ruta '/registrarse' a '/signup'
 ];
 
+// Creación de instancia de enrutador con historial de navegación
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
-  routes
+  history: createWebHistory(process.env.BASE_URL), // Historial de navegación usando el BASE_URL del entorno
+  routes // Asigna las rutas definidas al enrutador
 });
 
-// Guard de navegación
+// Guard de navegación para verificar autenticación y roles antes de cada cambio de ruta
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
-  const userRole = localStorage.getItem("userRole"); // Almacena el rol del usuario en el localStorage después del login
+  const isAuthenticated = localStorage.getItem("isAuthenticated") === "true"; // Verifica si el usuario está autenticado
+  const userRole = localStorage.getItem("userRole"); // Obtiene el rol del usuario desde localStorage
 
   if (to.matched.some(record => record.meta.requiresAuth) && !isAuthenticated) {
     // Redirige a login si la ruta requiere autenticación y el usuario no está autenticado
     next({ name: 'login' });
   } else if (to.meta.role === 'admin' && userRole !== 'admin') {
-    // Redirige a usuario si el usuario intenta acceder a una ruta de administrador sin el rol adecuado
+    // Redirige a la página de usuario si el rol es insuficiente para acceder a la ruta de administrador
     next({ name: 'PaginaUsuarioView' });
   } else if (to.meta.role === 'user' && userRole !== 'user') {
-    // Redirige a admin si el usuario intenta acceder a una ruta de usuario sin el rol adecuado
+    // Redirige a la página de administrador si el rol es insuficiente para acceder a la ruta de usuario
     next({ name: 'PaginaAdminView' });
   } else {
-    next(); // Permite el acceso a la ruta
+    // Permite el acceso a la ruta si se cumplen las condiciones de autenticación y rol
+    next();
   }
 });
 

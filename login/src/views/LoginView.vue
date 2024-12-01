@@ -1,13 +1,21 @@
 <template>
   <div class="container">
     <div class="wrapper">
+      <!-- Formulario de inicio de sesión con evento submit -->
       <form class="form-signin" @submit.prevent="login">       
         <h2 class="form-signin-heading text-center">Ingrese sus datos</h2>
+        <!-- Campo de entrada para correo electrónico -->
         <input type="text" class="form-control" v-model="email" placeholder="Correo electrónico" required autofocus />
+        <!-- Campo de entrada para contraseña -->
         <input type="password" class="form-control" v-model="password" placeholder="Contraseña" required />
+        <!-- Botón de envío del formulario para iniciar sesión -->
         <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button><br><br>
+        
         <h5 class="text-center">¿No tienes una cuenta?</h5>
+        <!-- Botón para redirigir a la página de registro -->
         <button class="btn btn-lg btn-primary btn-block" @click="signup">¡Regístrate!</button>
+        
+        <!-- Muestra un mensaje de error si existe -->
         <p v-if="error" class="text-danger text-center">{{ error }}</p>
       </form>
     </div>
@@ -20,12 +28,13 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      email: '',
-      password: '',
+      email: '', // Almacena el correo ingresado por el usuario
+      password: '', // Almacena la contraseña ingresada por el usuario
       error: '' // Mensaje de error si la autenticación falla
     };
   },
   methods: {
+    // Método para manejar el inicio de sesión
     async login() {
       // Validar si los campos están vacíos
       if (!this.email || !this.password) {
@@ -66,6 +75,7 @@ export default {
       }
     },
 
+    // Método para redirigir al usuario a la página de registro
     signup() {
       this.$router.push('/signup');
     }
@@ -74,15 +84,18 @@ export default {
 </script>
 
 <style>
+  /* Estilos generales de la página */
   body {
     background: #eee !important;	
   }
 
+  /* Contenedor principal */
   .wrapper {	
     margin-top: 80px;
     margin-bottom: 80px;
   }
 
+  /* Estilos para el formulario de inicio de sesión */
   .form-signin {
     max-width: 380px;
     padding: 15px 35px 45px;
@@ -102,6 +115,7 @@ export default {
     font-weight: normal;
   }
 
+  /* Estilos para los campos de entrada */
   .form-control {
     position: relative;
     font-size: 16px;
@@ -112,6 +126,7 @@ export default {
     margin-bottom: 10px; /* Añadir espacio entre los inputs */
   }
 
+  /* Especificar estilos para tipos de input */
   input[type="text"],
   input[type="password"] {
     margin-bottom: -1px;
@@ -122,6 +137,7 @@ export default {
     margin-bottom: 20px;
   }
 
+  /* Estilos para los botones */
   button {
     width: 100%; /* Asegurar que el botón ocupe todo el ancho */
     padding: 10px;

@@ -3,17 +3,29 @@
     <div class="wrapper">
       <form class="form-signin" @submit.prevent="signup">       
         <h2 class="form-signin-heading text-center">Ingrese sus datos</h2>
+        
         <br><h6>Nombre*</h6>
         <input type="text" class="form-control" v-model="nombre" placeholder="Nombre" required autofocus />
+        
         <br><h6>Apellido Paterno</h6>
         <input type="text" class="form-control" v-model="aPaterno" placeholder="Apellido Paterno" />
+        
         <br><h6>Apellido Materno</h6>
         <input type="text" class="form-control" v-model="aMaterno" placeholder="Apellido Materno" />
+        
         <br><h6>Correo Electrónico*</h6>
         <input type="text" class="form-control" v-model="email" placeholder="Correo Electrónico" required />
+        
         <br><h6>Contraseña*</h6>
         <input type="password" class="form-control" v-model="password" placeholder="Contraseña" required />
+
+        <!-- Botón para subir la foto de perfil -->
+        <br><h6>Foto de Perfil</h6>
+        <input type="file" class="form-control" @change="onFileChange" accept="image/*" />
+        <p v-if="fileName" class="text-info">Archivo seleccionado: {{ fileName }}</p>
+        
         <button class="btn btn-lg btn-primary btn-block" type="submit">Registrarse</button>
+        
         <p v-if="error" class="text-danger">{{ error }}</p>
         <p v-if="success" class="text-success">{{ success }}</p>
       </form>
@@ -22,7 +34,7 @@
 </template>
 
 <script>
-import axios from 'axios'; // Importar axios
+import axios from 'axios';
 
 export default {
   data() {
@@ -32,41 +44,60 @@ export default {
       aMaterno: '',
       email: '',
       password: '',
-      error: '', // Para mostrar errores
-      success: '' // Para mostrar éxito
+      fotoPerfil: null, // Variable para almacenar el archivo de imagen
+      fileName: '', // Nombre del archivo seleccionado
+      error: '',
+      success: ''
     }
   },
   methods: {
+    // Método que maneja el cambio de archivo en el input
+    onFileChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.fotoPerfil = e.target.result.split(',')[1]; // Extrae el contenido Base64
+        };
+        reader.readAsDataURL(file); // Leer el archivo como Data URL
+        this.fileName = file.name; // Guardar el nombre del archivo
+      }
+    },
     async signup() {
-      // Validar que los campos obligatorios estén completos
       if (!this.nombre || !this.email || !this.password) {
         this.error = 'Por favor, complete los campos obligatorios.';
         return;
       }
 
-      // Crear el objeto con los datos a enviar
-      const data = {
+      const userData = {
         nombre: this.nombre,
         apellidoPaterno: this.aPaterno || null,
         apellidoMaterno: this.aMaterno || null,
         correo: this.email,
-        contrasena: this.password
+        contrasena: this.password,
+        fotoPerfil: this.fotoPerfil // La imagen en Base64
       };
 
       try {
-        // Enviar los datos al backend usando axios
-        const response = await axios.post('http://localhost:8080/cliente/saveUser', data);
-        
-        // Verificar si la respuesta es un 200 (OK)
+        const response = await axios.post('http://localhost:8080/cliente/saveUser', userData, {
+          headers: { 'Content-Type': 'application/json' }
+        });
+
         if (response.status === 200) {
           this.success = 'Registro exitoso, redirigiendo...';
           this.error = '';
-          setTimeout(() => this.$router.push('/'), 2000); // Redirigir después de un breve tiempo
+          setTimeout(() => this.$router.push('/'), 2000);
         } else {
           this.error = 'Ocurrió un error durante el registro.';
         }
       } catch (error) {
-        this.error = 'Error al conectar con el servidor.';
+        if (error.response && error.response.status === 400 && error.response.data === "El correo ya está en uso.") {
+          // Mostrar mensaje claro si el correo está duplicado
+          this.error = 'El correo ingresado ya está en uso.';
+        } else {
+          // Mensaje genérico para otros errores
+          this.error = 'Error al conectar con el servidor.';
+        }
       }
     }
   }
@@ -74,15 +105,18 @@ export default {
 </script>
 
 <style>
+  /* Estilos generales de la página */
   body {
     background: #eee !important;	
   }
 
+  /* Contenedor principal */
   .wrapper {	
     margin-top: 80px;
     margin-bottom: 80px;
   }
 
+  /* Estilos para el formulario de registro */
   .form-signin {
     max-width: 380px;
     padding: 15px 35px 45px;
@@ -102,6 +136,7 @@ export default {
     font-weight: normal;
   }
 
+  /* Estilos para los campos de entrada */
   .form-control {
     position: relative;
     font-size: 16px;
@@ -112,6 +147,7 @@ export default {
     margin-bottom: 10px;
   }
 
+  /* Estilos específicos para inputs de texto y contraseña */
   input[type="text"],
   input[type="password"] {
     margin-bottom: -1px;
@@ -122,6 +158,7 @@ export default {
     margin-bottom: 20px;
   }
 
+  /* Estilos para los botones */
   button {
     width: 100%;
     padding: 10px;
@@ -137,12 +174,26 @@ export default {
     background-color: #0056b3;
   }
 
-  /* Mensaje de error */
+  /* Estilos para mensajes de texto de error y éxito */
   .text-danger {
     color: red;
   }
 
+  .text-success {
+    color: green;
+  }
+
   .text-center {
     text-align: center;
+  }
+
+  input[type="file"] {
+    border: none;
+    padding: 10px 0;
+    font-size: 16px;
+  }
+  .text-info {
+    color: #007bff;
+    font-style: italic;
   }
 </style>
