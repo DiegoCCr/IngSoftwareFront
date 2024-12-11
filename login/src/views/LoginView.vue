@@ -2,7 +2,7 @@
   <div class="container">
     <div class="wrapper">
       <!-- Formulario de inicio de sesión con evento submit -->
-      <form class="form-signin" @submit.prevent="login">       
+      <form class="form-signin" @submit.prevent="login">
         <h2 class="form-signin-heading text-center">Ingrese sus datos</h2>
         <!-- Campo de entrada para correo electrónico -->
         <input type="text" class="form-control" v-model="email" placeholder="Correo electrónico" required autofocus />
@@ -10,10 +10,25 @@
         <input type="password" class="form-control" v-model="password" placeholder="Contraseña" required />
         <!-- Botón de envío del formulario para iniciar sesión -->
         <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button><br><br>
-        
+
+        <!-- Botón para iniciar sesión con Google -->
+        <button 
+          class="btn btn-lg btn-primary btn-block" 
+          type="button" 
+          @click="google"
+        >
+          Iniciar sesión con Google
+        </button><br><br>
+
         <h5 class="text-center">¿No tienes una cuenta?</h5>
         <!-- Botón para redirigir a la página de registro -->
-        <button class="btn btn-lg btn-primary btn-block" @click="signup">¡Regístrate!</button>
+        <button 
+          class="btn btn-lg btn-primary btn-block" 
+          type="button" 
+          @click="signup"
+        >
+          ¡Regístrate!
+        </button>
         
         <!-- Muestra un mensaje de error si existe -->
         <p v-if="error" class="text-danger text-center">{{ error }}</p>
@@ -78,6 +93,10 @@ export default {
     // Método para redirigir al usuario a la página de registro
     signup() {
       this.$router.push('/signup');
+    },
+
+    google() {
+      this.$router.push({ name: 'GoogleLogin' }); // Asegúrate de que el nombre de la ruta sea correcto
     }
   }
 };

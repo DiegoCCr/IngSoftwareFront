@@ -2,7 +2,7 @@
   <div class="page-container">
     <!-- Mensaje de bienvenida -->
     <h1 v-if="userData" class="welcome-message">Bienvenido {{ userData.nombre }}</h1>
-    
+
     <!-- Contenedor de la foto de perfil -->
     <div class="profile-photo-container">
       <!-- Mostrar foto de perfil si está disponible -->
@@ -26,7 +26,7 @@
         <button @click="triggerFileInput" class="edit-photo-button">Cambiar Foto de Perfil</button>
       </div>
     </div>
-    
+
     <!-- Tabla de información del usuario -->
     <div class="table-container">
       <table v-if="userData" class="styled-table">
@@ -48,6 +48,11 @@
         </tbody>
       </table>
       <p v-else>Cargando datos...</p>
+      
+      <!-- Botón de acceso a la página de consulta de libros -->
+      <button @click="goToBookSearch" class="edit-photo-button">Consulta Libros</button>
+      <br><br>
+      <button @click="goToMovieSearch" class="edit-photo-button">Consulta Peliculas</button>
       
       <!-- Botón para cerrar sesión -->
       <button @click="logout" class="logout-button">Cerrar Sesión</button>
@@ -114,9 +119,17 @@ export default {
         alert("Ocurrió un error al actualizar la foto de perfil.");
       }
     },
+    // Método para redirigir a la página de consulta de libros
+    goToBookSearch() {
+      this.$router.push('/consultaLibros');
+    },
+    goToMovieSearch() {
+      this.$router.push('/consultaPelis');
+    },
   },
 };
 </script>
+
 
 <style scoped>
 /* Fondo de la página */
@@ -269,5 +282,26 @@ export default {
         font-size: 14px; /* Reducir tamaño de fuente */
         padding: 8px 16px; /* Reducir espaciado interno */
     }
+}
+
+/* Botón para acceder a la consulta de libros */
+.consulta-libros-button {
+  background-color: #5e79e8; /* Fondo azul */
+  color: #ffffff; /* Texto blanco */
+  border: none; /* Sin borde */
+  padding: 10px 20px; /* Espaciado interno */
+  font-size: 16px; /* Tamaño de fuente */
+  border-radius: 5px; /* Bordes redondeados */
+  cursor: pointer; /* Cambiar cursor a mano */
+  transition: background-color 0.3s ease; /* Efecto de transición */
+}
+
+.consulta-libros-button:hover {
+  background-color: #4c68c9; /* Fondo más oscuro al pasar el mouse */
+}
+
+.consulta-libros-button:focus {
+  outline: none; /* Quitar contorno predeterminado */
+  box-shadow: 0 0 5px #5e79e8; /* Resaltar el botón */
 }
 </style>
